@@ -67,7 +67,8 @@ export function useSyncState(showToast: (msg: string) => void) {
       batch.set(userRef, {
         bikeName: currentLocal.bikeName || 'Neo Scrambler',
         bikeModel: currentLocal.bikeModel || 'Honda CB350RS',
-        currentOdo: currentLocal.currentOdo || 0
+        currentOdo: currentLocal.currentOdo || 0,
+        bikePurchasePrice: currentLocal.bikePurchasePrice !== undefined ? currentLocal.bikePurchasePrice : 0
       });
 
       // 2. Subcollections
@@ -133,7 +134,8 @@ export function useSyncState(showToast: (msg: string) => void) {
       let bikeDetails = {
         bikeName: 'Neo Scrambler',
         bikeModel: 'Honda CB350RS',
-        currentOdo: 0
+        currentOdo: 0,
+        bikePurchasePrice: 0
       };
       let fuelLogs: FuelLog[] = [];
       let maintenanceEvents: MaintenanceEvent[] = [];
@@ -157,6 +159,7 @@ export function useSyncState(showToast: (msg: string) => void) {
           bikeName: bikeDetails.bikeName,
           bikeModel: bikeDetails.bikeModel,
           currentOdo: bikeDetails.currentOdo,
+          bikePurchasePrice: bikeDetails.bikePurchasePrice,
           fuelLogs,
           maintenanceEvents,
           documents,
@@ -183,7 +186,8 @@ export function useSyncState(showToast: (msg: string) => void) {
         bikeDetails = {
           bikeName: data.bikeName || 'Neo Scrambler',
           bikeModel: data.bikeModel || 'Honda CB350RS',
-          currentOdo: data.currentOdo || 0
+          currentOdo: data.currentOdo || 0,
+          bikePurchasePrice: data.bikePurchasePrice !== undefined ? data.bikePurchasePrice : 0
         };
         updateCombinedState();
       }, (err) => {
@@ -283,12 +287,14 @@ export function useSyncState(showToast: (msg: string) => void) {
         if (
           newState.bikeName !== undefined || 
           newState.bikeModel !== undefined || 
-          newState.currentOdo !== undefined
+          newState.currentOdo !== undefined ||
+          newState.bikePurchasePrice !== undefined
         ) {
           await setDoc(doc(db, 'users', userId), {
             bikeName: merged.bikeName,
             bikeModel: merged.bikeModel,
-            currentOdo: merged.currentOdo
+            currentOdo: merged.currentOdo,
+            bikePurchasePrice: merged.bikePurchasePrice !== undefined ? merged.bikePurchasePrice : 0
           }, { merge: true });
         }
 
@@ -398,9 +404,26 @@ export function useSyncState(showToast: (msg: string) => void) {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       showToast("Successfully signed in with Google!");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Google Auth error:", err);
-      showToast("Failed to authenticate with Google.");
+      if (err?.code === 'auth/unauthorized-domain' || String(err).includes('unauthorized-domain')) {
+        showToast("Error: Domain unauthorized in Firebase! See pop-up instructions.");
+        window.alert(
+          "Firebase Auth Error: Domain Not Authorized!\n\n" +
+          "To allow Google Login on GitHub Pages:\n" +
+          "1. Go to your Google Firebase Console (https://console.firebase.google.com/)\n" +
+          "2. Select your MotoVault project\n" +
+          "3. Go to: Build -> Authentication\n" +
+          "4. Click the 'Settings' tab at the top\n" +
+          "5. Select 'Authorized domains' on the left side menu\n" +
+          "6. Click 'Add domain'\n" +
+          "7. Enter exactly: aadi2305.github.io\n" +
+          "8. Click 'Add' and wait 10 seconds. Now try logging in again!\n\n" +
+          "Changes take effect immediately."
+        );
+      } else {
+        showToast("Failed to authenticate with Google.");
+      }
     }
   };
 

@@ -401,6 +401,7 @@ export function getActiveAlerts(
  * Calculates centralized lifetime financials and expense aggregates.
  */
 export interface FinancialsStatus {
+  bikePurchasePrice: number;
   fuelCost: number;
   serviceCost: number;
   installedModsCost: number;
@@ -419,8 +420,10 @@ export function calculateFinancials(
   maintenanceEvents: MaintenanceEvent[],
   garageMods: { status: string; price: number }[],
   documents: { cost?: number }[],
-  miscExpenses?: { cost: number; odo?: number }[]
+  miscExpenses?: { cost: number; odo?: number }[],
+  bikePurchasePrice?: number
 ): FinancialsStatus {
+  const bikePrice = bikePurchasePrice || 0;
   const fuelCost = fuelLogs.reduce((sum, log) => sum + (log.totalCost || 0), 0);
   const serviceCost = maintenanceEvents.reduce((sum, log) => sum + (log.totalCost || 0), 0);
   const installedModsCost = garageMods
@@ -429,7 +432,7 @@ export function calculateFinancials(
   const docFees = documents.reduce((sum, d) => sum + (d.cost || 0), 0);
   const miscCost = miscExpenses?.reduce((sum, e) => sum + (e.cost || 0), 0) || 0;
 
-  const totalExpense = fuelCost + serviceCost + installedModsCost + docFees + miscCost;
+  const totalExpense = bikePrice + fuelCost + serviceCost + installedModsCost + docFees + miscCost;
 
   // Earliest logged ODO (baseline capture)
   const odos = [
@@ -445,6 +448,7 @@ export function calculateFinancials(
   const costPerKm = distanceTravelled > 0 ? totalExpense / distanceTravelled : 0;
 
   return {
+    bikePurchasePrice: bikePrice,
     fuelCost,
     serviceCost,
     installedModsCost,

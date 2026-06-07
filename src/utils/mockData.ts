@@ -9,6 +9,7 @@ export const INITIAL_MOCK_STATE: MotoVaultState = {
   bikeName: 'CB350RS',
   bikeModel: 'Honda CB350RS',
   currentOdo: 898,
+  bikePurchasePrice: 0,
   fuelLogs: [],
   maintenanceEvents: [],
   documents: [
@@ -18,7 +19,7 @@ export const INITIAL_MOCK_STATE: MotoVaultState = {
       docNumber: 'KA-03-RS-0898',
       expiryDate: '2041-05-22', // 15 years registration validity in India (purchased 2026-05-23)
       details: 'Honda CB350RS Official Registration Certificate | Purchased 2026-05-23',
-      cost: 16500
+      cost: 0
     },
     {
       id: 'd-ins',
@@ -26,7 +27,7 @@ export const INITIAL_MOCK_STATE: MotoVaultState = {
       docNumber: 'POL-ICICI-RS-0898',
       expiryDate: '2027-05-22', // 1-year own damage renewal date
       details: 'Package Two Wheeler Policy - 1Yr Own Damage + 5Yr Third Party',
-      cost: 9200
+      cost: 0
     },
     {
       id: 'd-puc',
@@ -42,7 +43,7 @@ export const INITIAL_MOCK_STATE: MotoVaultState = {
       docNumber: 'KA-03-2026-0898',
       expiryDate: '2041-12-31',
       details: 'Blood Group: O+ve | Emergency contact backup set',
-      cost: 1500
+      cost: 0
     }
   ],
   garageMods: [

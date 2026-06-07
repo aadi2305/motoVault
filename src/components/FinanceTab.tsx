@@ -31,7 +31,8 @@ import {
   Cog, 
   Coins, 
   X,
-  Gauge
+  Gauge,
+  Bike
 } from 'lucide-react';
 
 interface LedgerTransaction {
@@ -79,7 +80,8 @@ export default function FinanceTab({ state, onUpdateState }: FinanceTabProps) {
       state.maintenanceEvents,
       state.garageMods,
       state.documents,
-      state.miscExpenses || []
+      state.miscExpenses || [],
+      state.bikePurchasePrice
     );
   }, [state]);
 
@@ -187,6 +189,7 @@ export default function FinanceTab({ state, onUpdateState }: FinanceTabProps) {
     if (total <= 0) return [];
 
     const rawSegments = [
+      { name: 'Bike Price', amount: financials.bikePurchasePrice, color: '#A1A1AA', icon: Bike },
       { name: 'Fuel', amount: financials.fuelCost, color: '#FF5C00', icon: Fuel },
       { name: 'Maintenance', amount: financials.serviceCost, color: '#3B82F6', icon: Wrench },
       { name: 'Modifications', amount: financials.installedModsCost, color: '#8B5CF6', icon: Cog },
@@ -601,6 +604,7 @@ export default function FinanceTab({ state, onUpdateState }: FinanceTabProps) {
             <h4 className="font-mono text-[10px] uppercase tracking-widest text-[#888D96]">Aggregate Ledger Category Insights</h4>
             <div className="space-y-3 pt-1">
               {[
+                { name: 'Motorcycle Purchase Cost', amount: financials.bikePurchasePrice, max: financials.totalExpense, color: 'bg-zinc-400', icon: Bike },
                 { name: 'Fuel Expenditures', amount: financials.fuelCost, max: financials.totalExpense, color: 'bg-[#FF5C00]', icon: Fuel },
                 { name: 'Service, Parts & Lubricants', amount: financials.serviceCost, max: financials.totalExpense, color: 'bg-blue-400', icon: Wrench },
                 { name: 'Installed Modifications', amount: financials.installedModsCost, max: financials.totalExpense, color: 'bg-purple-400', icon: Cog },

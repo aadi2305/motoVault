@@ -19,6 +19,7 @@ export default function DashboardTab({ state, onUpdateState, onNavigate }: Dashb
   const [isEditingBike, setIsEditingBike] = useState(false);
   const [tempName, setTempName] = useState(state.bikeName);
   const [tempModel, setTempModel] = useState(state.bikeModel);
+  const [tempPurchasePrice, setTempPurchasePrice] = useState<number | ''>(state.bikePurchasePrice || 0);
 
   // Calculate maintenance profiles
   const maintStatus = calculateMaintenance(state.currentOdo, state.maintenanceEvents);
@@ -31,7 +32,8 @@ export default function DashboardTab({ state, onUpdateState, onNavigate }: Dashb
     state.maintenanceEvents,
     state.garageMods,
     state.documents,
-    state.miscExpenses || []
+    state.miscExpenses || [],
+    state.bikePurchasePrice
   );
 
   const sortedFuelLogs = [...state.fuelLogs].sort((a, b) => a.currentOdo - b.currentOdo);
@@ -76,7 +78,8 @@ export default function DashboardTab({ state, onUpdateState, onNavigate }: Dashb
   const handleSaveBike = () => {
     onUpdateState({
       bikeName: tempName || 'My Cruiser',
-      bikeModel: tempModel || 'Motorcycle'
+      bikeModel: tempModel || 'Motorcycle',
+      bikePurchasePrice: tempPurchasePrice === '' ? 0 : Number(tempPurchasePrice)
     });
     setIsEditingBike(false);
   };
@@ -95,24 +98,40 @@ export default function DashboardTab({ state, onUpdateState, onNavigate }: Dashb
             </div>
             
             {isEditingBike ? (
-              <div className="flex flex-col sm:flex-row gap-2 mt-2 max-w-md">
-                <input
-                  type="text"
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  placeholder="Ride Display Name (e.g., Carbon Beast)"
-                  className="rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3 py-1.5 font-mono text-sm text-[#E0E0E0] placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none"
-                />
-                <input
-                  type="text"
-                  value={tempModel}
-                  onChange={(e) => setTempModel(e.target.value)}
-                  placeholder="Make & Model (e.g., KTM 390 Adventure)"
-                  className="rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3 py-1.5 font-mono text-sm text-[#E0E0E0] placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none"
-                />
+              <div className="flex flex-col sm:flex-row gap-2.5 mt-2 max-w-xl items-end">
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <span className="font-mono text-[8px] text-[#888D96] uppercase">Name</span>
+                  <input
+                    type="text"
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    placeholder="Ride Display Name"
+                    className="rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3 py-1.5 font-mono text-xs text-[#E0E0E0] placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none w-full"
+                  />
+                </div>
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <span className="font-mono text-[8px] text-[#888D96] uppercase">Model</span>
+                  <input
+                    type="text"
+                    value={tempModel}
+                    onChange={(e) => setTempModel(e.target.value)}
+                    placeholder="Make & Model"
+                    className="rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3 py-1.5 font-mono text-xs text-[#E0E0E0] placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none w-full"
+                  />
+                </div>
+                <div className="flex flex-col gap-1 w-full sm:w-auto">
+                  <span className="font-mono text-[8px] text-[#888D96] uppercase">Purchase Price (₹)</span>
+                  <input
+                    type="number"
+                    value={tempPurchasePrice}
+                    onChange={(e) => setTempPurchasePrice(e.target.value !== '' ? Number(e.target.value) : '')}
+                    placeholder="Bike Purchase Price"
+                    className="rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3 py-1.5 font-mono text-xs text-[#E0E0E0] placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none w-full"
+                  />
+                </div>
                 <button
                   onClick={handleSaveBike}
-                  className="rounded-lg bg-[#FF5C00] px-3 py-1.5 text-black hover:bg-[#FF5C00]/90 transition flex items-center justify-center font-bold font-mono"
+                  className="rounded-lg bg-[#FF5C00] px-3 py-1.5 text-black hover:bg-[#FF5C00]/90 transition flex items-center justify-center font-bold font-mono h-[32px] sm:h-[34px] min-w-[34px]"
                 >
                   <Check className="h-4 w-4" />
                 </button>
@@ -124,6 +143,7 @@ export default function DashboardTab({ state, onUpdateState, onNavigate }: Dashb
                   onClick={() => {
                     setTempName(state.bikeName);
                     setTempModel(state.bikeModel);
+                    setTempPurchasePrice(state.bikePurchasePrice !== undefined ? state.bikePurchasePrice : 0);
                     setIsEditingBike(true);
                   }}
                   className="text-[#888D96] hover:text-[#FF5C00] p-1 transition"

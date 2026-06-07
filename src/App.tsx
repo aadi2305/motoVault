@@ -39,6 +39,7 @@ export default function App() {
   const [setupBikeName, setSetupBikeName] = useState<string>('');
   const [setupBikeModel, setSetupBikeModel] = useState<string>('');
   const [setupCurrentOdo, setSetupCurrentOdo] = useState<number | ''>(0);
+  const [setupBikePurchasePrice, setSetupBikePurchasePrice] = useState<number | ''>('');
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -71,6 +72,9 @@ export default function App() {
       setSetupBikeName(state.bikeName || '');
       setSetupBikeModel(state.bikeModel || '');
       setSetupCurrentOdo(state.currentOdo || 0);
+      setSetupBikePurchasePrice(state.bikePurchasePrice || '');
+    } else {
+      setSetupBikePurchasePrice('');
     }
     setShowSetupModal(true);
   };
@@ -83,11 +87,13 @@ export default function App() {
     }
     
     const odoVal = setupCurrentOdo === '' ? 0 : Number(setupCurrentOdo);
+    const purchaseVal = setupBikePurchasePrice === '' ? 0 : Number(setupBikePurchasePrice);
     
     const cleanState: MotoVaultState = {
       bikeName: setupBikeName.trim(),
       bikeModel: setupBikeModel.trim(),
       currentOdo: odoVal,
+      bikePurchasePrice: purchaseVal,
       fuelLogs: [],
       maintenanceEvents: [],
       documents: [],
@@ -326,6 +332,23 @@ export default function App() {
                   placeholder="Current reading (e.g. 12500)"
                   value={setupCurrentOdo}
                   onChange={(e) => setSetupCurrentOdo(e.target.value !== '' ? Number(e.target.value) : '')}
+                  className="w-full rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3.5 py-3 font-mono text-sm text-white placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none min-h-[48px]"
+                />
+              </div>
+
+              {/* Bike Purchase Price Input */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="block font-mono text-[9px] uppercase tracking-wider text-[#888D96]">Motorcycle Purchase Price (₹)</label>
+                  <span className="font-mono text-[8px] text-[#888D96]">Optional; factored into lifetime cost</span>
+                </div>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min="0"
+                  placeholder="Cost of purchase (incl. taxes / registration)"
+                  value={setupBikePurchasePrice}
+                  onChange={(e) => setSetupBikePurchasePrice(e.target.value !== '' ? Number(e.target.value) : '')}
                   className="w-full rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3.5 py-3 font-mono text-sm text-white placeholder-zinc-600 focus:border-[#FF5C00] focus:outline-none min-h-[48px]"
                 />
               </div>

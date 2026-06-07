@@ -119,6 +119,7 @@ export interface MotoVaultState {
   bikeName: string;
   bikeModel: string;
   currentOdo: number;
+  bikePurchasePrice?: number; // Indian Rupees representable
   fuelLogs: FuelLog[];
   maintenanceEvents: MaintenanceEvent[];
   documents: DocumentRecord[];
