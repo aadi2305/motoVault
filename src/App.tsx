@@ -230,7 +230,10 @@ export default function App() {
         </main>
 
         {/* Floating/Bottom Responsive Tab Navigator */}
-        <nav className="fixed bottom-0 left-0 right-0 z-40 md:sticky md:bottom-2 md:mx-auto md:max-w-xl md:mb-4 md:rounded-2xl border-t border-[#2A2D35] md:border md:border-[#2A2D35] bg-[#16181D]/95 backdrop-blur-md px-4 py-2 md:py-1.5 shadow-2xl flex items-center justify-around">
+        <nav 
+          style={{ paddingBottom: 'calc(8px + env(safe-area-inset-bottom))' }}
+          className="fixed bottom-0 left-0 right-0 z-40 md:sticky md:bottom-2 md:mx-auto md:max-w-xl md:mb-4 md:rounded-2xl border-t border-[#2A2D35] md:border md:border-[#2A2D35] bg-[#16181D]/95 backdrop-blur-md px-4 pt-2 md:pt-1.5 md:pb-1.5 shadow-2xl flex items-center justify-around"
+        >
           
           {/* Tabs descriptor list */}
           {[

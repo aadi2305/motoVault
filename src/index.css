@@ -17,6 +17,13 @@ body {
   background-color: #0A0B0D; /* Sleek slate black */
   color: #E0E0E0; /* Minimalist bright gray */
   font-family: var(--font-sans);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Prevent native iOS Safari auto-zooming by enforcing min-16px font-sizes on inputs/textareas */
+input, select, textarea {
+  font-size: 16px !important;
 }
 
 /* Custom scrollbars or inputs to match Clean Minimalism */
