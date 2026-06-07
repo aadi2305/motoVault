@@ -1,0 +1,137 @@
+{
+  "entities": {
+    "bikeSettings": {
+      "title": "Bike Settings",
+      "description": "User's active motorcycle tracking specifications",
+      "type": "object",
+      "properties": {
+        "bikeName": {
+          "type": "string",
+          "description": "Custom name given to the motorcycle"
+        },
+        "bikeModel": {
+          "type": "string",
+          "description": "Official manufacture model name"
+        },
+        "currentOdo": {
+          "type": "integer",
+          "description": "Latest odometer reading of the vehicle"
+        }
+      },
+      "required": ["bikeName", "bikeModel", "currentOdo"]
+    },
+    "fuelLog": {
+      "title": "Fuel Log",
+      "description": "Log entry tracking fuel fills and costs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "currentOdo": { "type": "integer" },
+        "tripA": { "type": "number" },
+        "fuelLiters": { "type": "number" },
+        "totalCost": { "type": "number" },
+        "fuelStation": { "type": "string" },
+        "trackingMethod": { "type": "string" },
+        "isStandaloneAverage": { "type": "boolean" },
+        "standaloneAverage": { "type": "number" },
+        "calculatedAverage": { "type": "number" },
+        "warningFlag": { "type": "string" },
+        "isBrokenChain": { "type": "boolean" }
+      },
+      "required": ["id", "date", "currentOdo", "fuelLiters", "totalCost", "trackingMethod"]
+    },
+    "maintenanceEvent": {
+      "title": "Maintenance Event",
+      "description": "Vehicle service and maintenance events",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "odo": { "type": "integer" },
+        "serviceCenter": { "type": "string" },
+        "totalCost": { "type": "number" },
+        "billPhotoUrl": { "type": "string" },
+        "notes": { "type": "string" },
+        "tasksPerformed": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["id", "date", "odo", "serviceCenter", "totalCost", "tasksPerformed"]
+    },
+    "documentRecord": {
+      "title": "Document Record",
+      "description": "Vehicle credentials such as Registration, Pollution check, or License",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "category": { "type": "string" },
+        "docNumber": { "type": "string" },
+        "expiryDate": { "type": "string" },
+        "details": { "type": "string" },
+        "photoDataUrl": { "type": "string" },
+        "fileName": { "type": "string" },
+        "cost": { "type": "number" }
+      },
+      "required": ["id", "category", "docNumber"]
+    },
+    "modificationItem": {
+      "title": "Modification Item",
+      "description": "Wishlist and installed modifications and accessories",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string" },
+        "priority": { "type": "string" },
+        "price": { "type": "number" },
+        "source": { "type": "string" },
+        "installationOdo": { "type": "integer" }
+      },
+      "required": ["id", "name", "category", "status", "priority", "price"]
+    },
+    "miscExpense": {
+      "title": "Miscellaneous Expense",
+      "description": "Ad-hoc expense logging for items, tolls, gear, etc.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "odo": { "type": "integer" },
+        "itemReason": { "type": "string" },
+        "category": { "type": "string" },
+        "cost": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "date", "itemReason", "category", "cost"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "bikeSettings",
+      "description": "General settings for each biker user"
+    },
+    "/users/{userId}/fuelLogs/{logId}": {
+      "schema": "fuelLog",
+      "description": "Fuel fills collection for biker"
+    },
+    "/users/{userId}/maintenanceEvents/{eventId}": {
+      "schema": "maintenanceEvent",
+      "description": "Maintenance service events collection for biker"
+    },
+    "/users/{userId}/documents/{docId}": {
+      "schema": "documentRecord",
+      "description": "Credential uploads and details collection for biker"
+    },
+    "/users/{userId}/garageMods/{modId}": {
+      "schema": "modificationItem",
+      "description": "Parts and custom motorcycle upgrades collection for biker"
+    },
+    "/users/{userId}/miscExpenses/{expenseId}": {
+      "schema": "miscExpense",
+      "description": "Miscellaneous and ad-hoc expense logs"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "MotoVault",
+  "description": "A premium motorcycle fuel, maintenance, document vault, and modification tracking application for Indian riders.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
