@@ -29,6 +29,11 @@ import { INITIAL_MOCK_STATE } from '../utils/mockData';
 
 const LOCAL_STORAGE_KEY = 'motovault_ride_state_v1';
 
+// Clean any undefined properties from objects to prevent Firestore setDoc/writeBatch errors
+function sanitizeForFirestore<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as T;
+}
+
 export function useSyncState(showToast: (msg: string) => void) {
   const [state, setState] = useState<MotoVaultState | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -64,38 +69,38 @@ export function useSyncState(showToast: (msg: string) => void) {
       
       // 1. Root setting doc
       const userRef = doc(db, 'users', userId);
-      batch.set(userRef, {
+      batch.set(userRef, sanitizeForFirestore({
         bikeName: currentLocal.bikeName || 'Neo Scrambler',
         bikeModel: currentLocal.bikeModel || 'Honda CB350RS',
         currentOdo: currentLocal.currentOdo || 0,
         bikePurchasePrice: currentLocal.bikePurchasePrice !== undefined ? currentLocal.bikePurchasePrice : 0
-      });
+      }));
 
       // 2. Subcollections
       currentLocal.fuelLogs.forEach(item => {
         const ref = doc(db!, 'users', userId, 'fuelLogs', item.id);
-        batch.set(ref, item);
+        batch.set(ref, sanitizeForFirestore(item));
       });
 
       currentLocal.maintenanceEvents.forEach(item => {
         const ref = doc(db!, 'users', userId, 'maintenanceEvents', item.id);
-        batch.set(ref, item);
+        batch.set(ref, sanitizeForFirestore(item));
       });
 
       currentLocal.documents.forEach(item => {
         const ref = doc(db!, 'users', userId, 'documents', item.id);
-        batch.set(ref, item);
+        batch.set(ref, sanitizeForFirestore(item));
       });
 
       currentLocal.garageMods.forEach(item => {
         const ref = doc(db!, 'users', userId, 'garageMods', item.id);
-        batch.set(ref, item);
+        batch.set(ref, sanitizeForFirestore(item));
       });
 
       if (currentLocal.miscExpenses) {
         currentLocal.miscExpenses.forEach(item => {
           const ref = doc(db!, 'users', userId, 'miscExpenses', item.id);
-          batch.set(ref, item);
+          batch.set(ref, sanitizeForFirestore(item));
         });
       }
 
@@ -306,7 +311,7 @@ export function useSyncState(showToast: (msg: string) => void) {
           for (const item of newState.fuelLogs) {
             const oldItem = oldMap.get(item.id);
             if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(item)) {
-              await setDoc(doc(db, 'users', userId, 'fuelLogs', item.id), item);
+              await setDoc(doc(db, 'users', userId, 'fuelLogs', item.id), sanitizeForFirestore(item));
             }
           }
           for (const oldId of oldMap.keys()) {
@@ -324,7 +329,7 @@ export function useSyncState(showToast: (msg: string) => void) {
           for (const item of newState.maintenanceEvents) {
             const oldItem = oldMap.get(item.id);
             if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(item)) {
-              await setDoc(doc(db, 'users', userId, 'maintenanceEvents', item.id), item);
+              await setDoc(doc(db, 'users', userId, 'maintenanceEvents', item.id), sanitizeForFirestore(item));
             }
           }
           for (const oldId of oldMap.keys()) {
@@ -342,7 +347,7 @@ export function useSyncState(showToast: (msg: string) => void) {
           for (const item of newState.documents) {
             const oldItem = oldMap.get(item.id);
             if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(item)) {
-              await setDoc(doc(db, 'users', userId, 'documents', item.id), item);
+              await setDoc(doc(db, 'users', userId, 'documents', item.id), sanitizeForFirestore(item));
             }
           }
           for (const oldId of oldMap.keys()) {
@@ -360,7 +365,7 @@ export function useSyncState(showToast: (msg: string) => void) {
           for (const item of newState.garageMods) {
             const oldItem = oldMap.get(item.id);
             if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(item)) {
-              await setDoc(doc(db, 'users', userId, 'garageMods', item.id), item);
+              await setDoc(doc(db, 'users', userId, 'garageMods', item.id), sanitizeForFirestore(item));
             }
           }
           for (const oldId of oldMap.keys()) {
@@ -378,7 +383,7 @@ export function useSyncState(showToast: (msg: string) => void) {
           for (const item of newState.miscExpenses) {
             const oldItem = oldMap.get(item.id);
             if (!oldItem || JSON.stringify(oldItem) !== JSON.stringify(item)) {
-              await setDoc(doc(db, 'users', userId, 'miscExpenses', item.id), item);
+              await setDoc(doc(db, 'users', userId, 'miscExpenses', item.id), sanitizeForFirestore(item));
             }
           }
           for (const oldId of oldMap.keys()) {

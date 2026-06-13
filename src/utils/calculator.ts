@@ -44,10 +44,10 @@ export function recalculateFuelAverages(logs: FuelLog[]): FuelLog[] {
       // divided by the fuel added at that *previous* log.
       let prevReserveLog: FuelLog | null = null;
       for (let j = i - 1; j >= 0; j--) {
-        if (sortedLogs[j].isBrokenChain) {
-          break; // Stop looking past a broken chain
+        if (sortedLogs[j].isBrokenChain || sortedLogs[j].isStandaloneAverage) {
+          break; // Stop looking past a broken chain or standalone override
         }
-        if (!sortedLogs[j].isStandaloneAverage && sortedLogs[j].trackingMethod === TrackingMethod.RESERVE_TO_RESERVE) {
+        if (sortedLogs[j].trackingMethod === TrackingMethod.RESERVE_TO_RESERVE) {
           prevReserveLog = sortedLogs[j];
           break;
         }
@@ -71,11 +71,8 @@ export function recalculateFuelAverages(logs: FuelLog[]): FuelLog[] {
       
       for (let j = i - 1; j >= 0; j--) {
         const prev = sortedLogs[j];
-        if (prev.isStandaloneAverage) {
-          continue; // Skip standalone average entries
-        }
-        if (prev.isBrokenChain) {
-          // The chain is explicitly broken here; treat this as the baseline
+        if (prev.isBrokenChain || prev.isStandaloneAverage) {
+          // The chain is explicitly broken or hit a standalone override; treat this as the baseline anchor
           prevAnchorLog = prev;
           break;
         }
