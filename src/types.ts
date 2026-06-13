@@ -31,7 +31,8 @@ export enum ModCategory {
   PROTECTION = 'Protection',
   ELECTRICALS = 'Electricals',
   PERFORMANCE = 'Performance',
-  COSMETICS = 'Cosmetics'
+  COSMETICS = 'Cosmetics',
+  MAINTENANCE_TOOLS = 'Tools & Maintenance'
 }
 
 export enum ModStatus {

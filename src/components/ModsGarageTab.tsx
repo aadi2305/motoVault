@@ -24,6 +24,7 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
   const [price, setPrice] = useState<number | ''>('');
   const [source, setSource] = useState('');
   const [installationOdo, setInstallationOdo] = useState<number | ''>('');
+  const [selectedTool, setSelectedTool] = useState('');
 
   // Active filter
   const [activeFilter, setActiveFilter] = useState<'All' | ModStatus>('All');
@@ -69,6 +70,7 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
     setPrice('');
     setSource('');
     setInstallationOdo('');
+    setSelectedTool('');
     setShowAddForm(false);
   };
 
@@ -169,7 +171,13 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
               <label className="font-mono text-[10px] uppercase tracking-wider text-[#888D96]">Mod Classification</label>
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as ModCategory)}
+                onChange={(e) => {
+                  const val = e.target.value as ModCategory;
+                  setCategory(val);
+                  if (val !== ModCategory.MAINTENANCE_TOOLS) {
+                    setSelectedTool('');
+                  }
+                }}
                 className="w-full rounded-lg border border-[#2A2D35] bg-[#0A0B0D] px-3 py-2 font-mono text-xs text-[#E0E0E0] focus:border-[#FF5C00] focus:outline-none cursor-pointer"
               >
                 <option value={ModCategory.TOURING}>Touring (Luggage, wind protection)</option>
@@ -177,8 +185,35 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
                 <option value={ModCategory.ELECTRICALS}>Electricals (Spotlights, Horns, Chargers)</option>
                 <option value={ModCategory.PERFORMANCE}>Performance (Filtres, Exhaust, Tuners)</option>
                 <option value={ModCategory.COSMETICS}>Cosmetics (Wraps, Levers, Visors)</option>
+                <option value={ModCategory.MAINTENANCE_TOOLS}>Tools & Maintenance (Tool kit, Lube set, etc.)</option>
               </select>
             </div>
+
+            {category === ModCategory.MAINTENANCE_TOOLS && (
+              <div className="space-y-1">
+                <label className="font-mono text-[10px] uppercase tracking-wider text-[#FF5C00] font-bold">Select Tool / Setup</label>
+                <select
+                  value={selectedTool}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSelectedTool(value);
+                    if (value && value !== 'Other') {
+                      setName(value);
+                    }
+                  }}
+                  className="w-full rounded-lg border border-[#FF5C00]/40 bg-[#0A0B0D] px-3 py-2 font-mono text-xs text-white focus:border-[#FF5C00] focus:outline-none cursor-pointer"
+                >
+                  <option value="">-- Choose Quick Preset Tool --</option>
+                  <option value="Tool Kit">Common Tool Kit (Wrenches, screwdrivers, etc.)</option>
+                  <option value="Chain Lubrication Setup">Chain Lubrication Setup (Lube, cleaner, brush)</option>
+                  <option value="Puncture Repair Kit">Puncture Repair Kit (Plugs, reamer, probe)</option>
+                  <option value="Portable Tyre Inflator">Portable Tyre Inflator (Electric/Manual)</option>
+                  <option value="Chain Brush & Cleaner Set">Chain Brush & Cleaner Set</option>
+                  <option value="Front/Rear Paddock Stand">Front/Rear Paddock Stand</option>
+                  <option value="Other">Other Custom Tool / Kit</option>
+                </select>
+              </div>
+            )}
 
             <div className="space-y-1">
               <label className="font-mono text-[10px] uppercase tracking-wider text-[#888D96]">Current Status</label>
