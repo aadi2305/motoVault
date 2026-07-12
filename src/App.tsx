@@ -214,13 +214,6 @@ export default function App() {
             <div className="h-6 w-px bg-[#2A2D35]" />
 
             <button
-              onClick={handleResetToMock}
-              title="Reset to Honda CB350RS reference sample data"
-              className="p-1.5 sm:p-2 rounded-lg text-[#888D96] hover:text-[#FF5C00] bg-zinc-900/50 hover:bg-[#0A0B0D] border border-[#2A2D35] transition cursor-pointer flex items-center justify-center"
-            >
-              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            </button>
-            <button
               onClick={handleClearToEmpty}
               title="Factory reset motorcycle details"
               className="p-1.5 sm:p-2 rounded-lg text-[#888D96] hover:text-red-500 bg-zinc-900/50 hover:bg-[#0A0B0D] border border-[#2A2D35] transition cursor-pointer flex items-center justify-center"

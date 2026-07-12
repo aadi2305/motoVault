@@ -29,6 +29,7 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
 
   // Active filter
   const [activeFilter, setActiveFilter] = useState<'All' | ModStatus>('All');
+  const [impactFilter, setImpactFilter] = useState<'All' | ModPriority>('All');
 
   const resetForm = () => {
     setName('');
@@ -58,7 +59,9 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
     }
     setEditingModId(mod.id);
     setShowAddForm(true);
-    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 50);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -146,9 +149,19 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
     });
   };
 
-  const filteredMods = activeFilter === 'All'
-    ? state.garageMods
-    : state.garageMods.filter(m => m.status === activeFilter);
+  const getPriorityWeight = (priority: ModPriority) => {
+    switch (priority) {
+      case ModPriority.HIGH: return 3;
+      case ModPriority.MEDIUM: return 2;
+      case ModPriority.LOW: return 1;
+      default: return 0;
+    }
+  };
+
+  const filteredMods = state.garageMods
+    .filter(m => (activeFilter === 'All' ? true : m.status === activeFilter))
+    .filter(m => (impactFilter === 'All' ? true : m.priority === impactFilter))
+    .sort((a, b) => getPriorityWeight(b.priority) - getPriorityWeight(a.priority));
 
   // Stats summaries
   const wishlistCost = state.garageMods
@@ -174,7 +187,11 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
         <button
           onClick={() => {
             setErrorMsg(null);
-            setShowAddForm(!showAddForm);
+            if (showAddForm) {
+              resetForm();
+            } else {
+              setShowAddForm(true);
+            }
           }}
           className="flex items-center justify-center space-x-1.5 rounded-lg bg-[#FF5C00] px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-wider text-black hover:bg-[#FF5C00]/90 cursor-pointer shadow-lg transition"
         >
@@ -197,7 +214,7 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
       {showAddForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-[#2A2D35] bg-[#16181D] p-5 shadow-xl space-y-4">
           <h3 className="font-bold font-mono text-xs uppercase tracking-widest text-[#FF5C00]">
-            Designate Custom Modification
+            {editingModId ? 'Update Custom Modification' : 'Designate Custom Modification'}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -329,7 +346,7 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
               type="submit"
               className="rounded-lg bg-[#FF5C00] px-5 py-2 font-mono text-[10px] uppercase tracking-widest font-bold text-black hover:bg-[#FF5C00]/90 cursor-pointer shadow-md transition"
             >
-              Secure mod specification
+              {editingModId ? 'Update mod specification' : 'Secure mod specification'}
             </button>
           </div>
         </form>
@@ -360,25 +377,49 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
       </div>
 
       {/* Filters toggler bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2D35] pb-3">
-        <label className="font-mono text-xs text-[#E0E0E0] font-semibold flex items-center space-x-1.5 uppercase tracking-wider">
-          <ListFilter className="h-3.5 w-3.5 text-[#FF5C00]" />
-          <span>Upgrade pipeline:</span>
-        </label>
-        <div className="flex flex-wrap gap-1.5 text-[10px] font-mono w-full sm:w-auto">
-          {(['All', ModStatus.WISHLIST, ModStatus.ORDERED, ModStatus.INSTALLED] as const).map((lvl) => (
-            <button
-              key={lvl}
-              onClick={() => setActiveFilter(lvl)}
-              className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold uppercase tracking-wider text-[10px] flex-1 sm:flex-initial text-center ${
-                activeFilter === lvl 
-                  ? 'bg-[#FF5C00] text-black font-bold shadow-md' 
-                  : 'text-[#888D96] bg-[#16181D]/40 border border-[#2A2D35] hover:text-white hover:bg-[#16181D]'
-              }`}
-            >
-              {lvl}
-            </button>
-          ))}
+      <div className="flex flex-col space-y-3 border-b border-[#2A2D35] pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <label className="font-mono text-xs text-[#E0E0E0] font-semibold flex items-center space-x-1.5 uppercase tracking-wider">
+            <ListFilter className="h-3.5 w-3.5 text-[#FF5C00]" />
+            <span>Upgrade pipeline:</span>
+          </label>
+          <div className="flex flex-wrap gap-1.5 text-[10px] font-mono w-full sm:w-auto">
+            {(['All', ModStatus.WISHLIST, ModStatus.ORDERED, ModStatus.INSTALLED] as const).map((lvl) => (
+              <button
+                key={lvl}
+                onClick={() => setActiveFilter(lvl)}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold uppercase tracking-wider text-[10px] flex-1 sm:flex-initial text-center ${
+                  activeFilter === lvl 
+                    ? 'bg-[#FF5C00] text-black font-bold shadow-md' 
+                    : 'text-[#888D96] bg-[#16181D]/40 border border-[#2A2D35] hover:text-white hover:bg-[#16181D]'
+                }`}
+              >
+                {lvl}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <label className="font-mono text-xs text-[#E0E0E0] font-semibold flex items-center space-x-1.5 uppercase tracking-wider">
+            <AlertCircle className="h-3.5 w-3.5 text-[#FF5C00]" />
+            <span>Impact Priority:</span>
+          </label>
+          <div className="flex flex-wrap gap-1.5 text-[10px] font-mono w-full sm:w-auto">
+            {(['All', ModPriority.HIGH, ModPriority.MEDIUM, ModPriority.LOW] as const).map((lvl) => (
+              <button
+                key={lvl}
+                onClick={() => setImpactFilter(lvl)}
+                className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold uppercase tracking-wider text-[10px] flex-1 sm:flex-initial text-center ${
+                  impactFilter === lvl 
+                    ? 'bg-[#FF5C00] text-black font-bold shadow-md' 
+                    : 'text-[#888D96] bg-[#16181D]/40 border border-[#2A2D35] hover:text-white hover:bg-[#16181D]'
+                }`}
+              >
+                {lvl}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
