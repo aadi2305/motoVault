@@ -308,21 +308,36 @@ export default function DocumentVaultTab({ state, onUpdateState }: DocumentVault
                     <span>Expiry limitations: <b>{doc.expiryDate}</b></span>
                   </div>
                 )}
+                {doc.photoDataUrl && (
+                  <div 
+                    onClick={() => setActivePreviewDoc(doc)}
+                    className="relative w-full h-24 mt-3 rounded-lg overflow-hidden border border-[#2A2D35] cursor-pointer group"
+                  >
+                    <img
+                      src={doc.photoDataUrl}
+                      alt="Thumbnail"
+                      className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition">
+                      <div className="bg-[#0A0B0D]/80 backdrop-blur-sm border border-[#2A2D35] text-[#FF5C00] px-3 py-1.5 rounded-lg flex items-center space-x-2 font-mono text-xs font-bold uppercase tracking-wider">
+                        <Eye className="h-4 w-4" />
+                        <span>View Document Scan</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Action buttons */}
               <div className="flex items-center justify-between border-t border-[#2A2D35] pt-3 mt-1">
                 {doc.photoDataUrl ? (
-                  <button
-                    onClick={() => setActivePreviewDoc(doc)}
-                    className="flex items-center space-x-1 text-xs font-mono text-[#FF5C00] hover:text-[#FF5C00]/80 transition cursor-pointer font-bold uppercase tracking-wider"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    <span>View Attachment</span>
-                  </button>
+                  <div className="flex items-center space-x-1 text-[10px] font-mono text-[#00C853]">
+                    <ShieldCheck className="h-3 w-3" />
+                    <span>Digital scan secured</span>
+                  </div>
                 ) : (
-                  <div className="flex items-center space-x-1 text-xs font-mono text-[#888D96]">
-                    <FileText className="h-3.5 w-3.5 text-[#888D96]/60" />
+                  <div className="flex items-center space-x-1 text-[10px] font-mono text-[#888D96]">
+                    <FileText className="h-3 w-3 text-[#888D96]/60" />
                     <span className="text-[#888D96]/70">No scan attached</span>
                   </div>
                 )}
@@ -350,10 +365,10 @@ export default function DocumentVaultTab({ state, onUpdateState }: DocumentVault
       {/* Embedded Document Preview Modal Drawer */}
       {activePreviewDoc && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4">
-          <div className="relative max-w-lg w-full rounded-2xl border border-[#2A2D35] bg-[#16181D] p-5 shadow-2xl space-y-4">
+          <div className="relative max-w-4xl w-full rounded-2xl border border-[#2A2D35] bg-[#16181D] p-5 shadow-2xl space-y-4">
             <button
               onClick={() => setActivePreviewDoc(null)}
-              className="absolute right-4 top-4 rounded-lg bg-[#0A0B0D] border border-[#2A2D35] p-1.5 text-zinc-400 hover:text-white transition cursor-pointer"
+              className="absolute right-4 top-4 rounded-lg bg-[#0A0B0D] border border-[#2A2D35] p-1.5 text-zinc-400 hover:text-white transition cursor-pointer z-10"
             >
               <X className="h-4 w-4" />
             </button>
@@ -367,7 +382,7 @@ export default function DocumentVaultTab({ state, onUpdateState }: DocumentVault
               </h3>
             </div>
 
-            <div className="border border-[#2A2D35] rounded-xl overflow-hidden bg-[#0A0B0D] aspect-video flex items-center justify-center relative select-none max-h-[350px]">
+            <div className="border border-[#2A2D35] rounded-xl overflow-hidden bg-[#0A0B0D] flex items-center justify-center relative select-none max-h-[75vh]">
               <img
                 src={activePreviewDoc.photoDataUrl}
                 referrerPolicy="no-referrer"

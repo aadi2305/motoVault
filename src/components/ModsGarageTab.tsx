@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { MotoVaultState, ModificationItem, ModCategory, ModStatus, ModPriority } from '../types';
-import { Plus, Trash2, ArrowUpRight, IndianRupee, Eye, Sparkles, Check, ListFilter, AlertCircle, ShoppingCart } from 'lucide-react';
+import { Plus, Trash2, ArrowUpRight, IndianRupee, Eye, Sparkles, Check, ListFilter, AlertCircle, ShoppingCart, Pencil } from 'lucide-react';
 
 interface ModsGarageTabProps {
   state: MotoVaultState;
@@ -14,6 +14,7 @@ interface ModsGarageTabProps {
 
 export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabProps) {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingModId, setEditingModId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Form states
@@ -28,6 +29,37 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
 
   // Active filter
   const [activeFilter, setActiveFilter] = useState<'All' | ModStatus>('All');
+
+  const resetForm = () => {
+    setName('');
+    setCategory(ModCategory.PROTECTION);
+    setStatus(ModStatus.WISHLIST);
+    setPriority(ModPriority.HIGH);
+    setPrice('');
+    setSource('');
+    setInstallationOdo('');
+    setSelectedTool('');
+    setEditingModId(null);
+    setShowAddForm(false);
+    setErrorMsg(null);
+  };
+
+  const handleEdit = (mod: ModificationItem) => {
+    setName(mod.name);
+    setCategory(mod.category);
+    setStatus(mod.status);
+    setPriority(mod.priority);
+    setPrice(mod.price);
+    setSource(mod.source);
+    setInstallationOdo(mod.installationOdo ?? '');
+    // If it's tools category, try matching the tool
+    if (mod.category === ModCategory.MAINTENANCE_TOOLS) {
+      setSelectedTool(mod.name); // basic approximation
+    }
+    setEditingModId(mod.id);
+    setShowAddForm(true);
+    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,28 +82,42 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
       customInstOdo = installationOdo !== '' ? Number(installationOdo) : state.currentOdo;
     }
 
-    const newMod: ModificationItem = {
-      id: `mod-${Date.now()}`,
-      name: name.trim(),
-      category,
-      status,
-      priority,
-      price: estimatedPrice,
-      source: source.trim() || 'Vendor Store',
-      installationOdo: customInstOdo
-    };
+    if (editingModId) {
+      const updatedMods = state.garageMods.map(m => {
+        if (m.id === editingModId) {
+          return {
+            ...m,
+            name: name.trim(),
+            category,
+            status,
+            priority,
+            price: estimatedPrice,
+            source: source.trim() || 'Vendor Store',
+            installationOdo: customInstOdo
+          };
+        }
+        return m;
+      });
+      onUpdateState({ garageMods: updatedMods });
+    } else {
+      const newMod: ModificationItem = {
+        id: `mod-${Date.now()}`,
+        name: name.trim(),
+        category,
+        status,
+        priority,
+        price: estimatedPrice,
+        source: source.trim() || 'Vendor Store',
+        installationOdo: customInstOdo
+      };
 
-    onUpdateState({
-      garageMods: [...state.garageMods, newMod]
-    });
+      onUpdateState({
+        garageMods: [...state.garageMods, newMod]
+      });
+    }
 
     // Reset Form
-    setName('');
-    setPrice('');
-    setSource('');
-    setInstallationOdo('');
-    setSelectedTool('');
-    setShowAddForm(false);
+    resetForm();
   };
 
   const handleUpdateStatus = (id: string, newStatus: ModStatus) => {
@@ -412,13 +458,22 @@ export default function ModsGarageTab({ state, onUpdateState }: ModsGarageTabPro
                   ))}
                 </div>
 
-                <button
-                  onClick={() => handleDelete(mod.id)}
-                  className="rounded-lg bg-[#0A0B0D] hover:bg-red-500/5 hover:text-red-500 border border-[#2A2D35] p-2 text-[#888D96] transition cursor-pointer"
-                  title="Remove upgrade item"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEdit(mod)}
+                    className="rounded-lg bg-[#0A0B0D] hover:bg-[#FF5C00]/10 hover:text-[#FF5C00] border border-[#2A2D35] p-2 text-[#888D96] transition cursor-pointer"
+                    title="Edit upgrade item"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(mod.id)}
+                    className="rounded-lg bg-[#0A0B0D] hover:bg-red-500/5 hover:text-red-500 border border-[#2A2D35] p-2 text-[#888D96] transition cursor-pointer"
+                    title="Remove upgrade item"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
 
             </div>
